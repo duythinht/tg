@@ -1,0 +1,46 @@
+---
+version: '3'
+services:
+  broker:
+    image: docker.redpanda.com/vectorized/redpanda:latest
+    container_name: broker
+    ports:
+    # To learn about configuring Kafka for access across networks see
+    # https://www.confluent.io/blog/kafka-client-cannot-connect-to-broker-on-aws-on-docker-etc/
+      - "9092:19092"
+      - "8082:28082"
+    command:
+    - redpanda
+    - start
+    - --smp
+    - '1'
+    - --reserve-memory
+    - 0G
+    - --overprovisioned
+    - --node-id
+    - '0'
+    - --kafka-addr
+    - PLAINTEXT://0.0.0.0:9092,OUTSIDE://0.0.0.0:19092
+    - --advertise-kafka-addr
+    - PLAINTEXT://broker:9092,OUTSIDE://127.0.0.1:9092
+    - --pandaproxy-addr
+    - PLAINTEXT://0.0.0.0:8082,OUTSIDE://0.0.0.0:28082
+    - --advertise-pandaproxy-addr
+    - PLAINTEXT://broker:8082,OUTSIDE://127.0.0.1:8082
+  pg14:
+    image: bitnami/postgresql:14
+    container_name: pg14
+    ports:
+    - '5432:5432'
+    environment:
+      POSTGRESQL_PASSWORD: x
+      POSTGRESQL_REPLICATION_MODE: master
+  console:
+    image: docker.redpanda.com/vectorized/console:latest
+    container_name: console
+    depends_on:
+      - broker
+    ports:
+    - '8081:8080'
+    environment:
+      KAFKA_BROKERS: broker:9092
