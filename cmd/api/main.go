@@ -7,19 +7,26 @@ import (
 	"time"
 
 	"github.com/duythinht/tg/api"
+	"github.com/duythinht/tg/config"
 	"github.com/duythinht/tg/lib/store/kafka"
 	"github.com/jackc/pgx/v4/pgxpool"
 )
 
 func main() {
 
-	db, err := pgxpool.Connect(context.Background(), "postgres://postgres:x@localhost:5432/postgres")
+	cfg, err := config.Load()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	queue := kafka.NewQueueWriter("localhost:9092", "scan")
+	db, err := pgxpool.Connect(context.Background(), cfg.DB.DSN)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	queue := kafka.NewQueueWriter(cfg.Queue.Brokers, cfg.Queue.Topic)
 
 	handler := api.New(db, queue)
 
@@ -35,40 +42,3 @@ func main() {
 
 	log.Fatal(s.ListenAndServe())
 }
-
-/*
-func main() {
-	repo := github.OpenRepository("duythinht", "zhttp")
-
-	gfs, err := repo.OpenFS(context.Background())
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	fs.WalkDir(gfs, "", func(path string, d fs.DirEntry, err error) error {
-		if d.IsDir() {
-			return nil
-		}
-
-		fmt.Printf("path: `%s`\n", path)
-		f, err := gfs.Open(path)
-		if err != nil {
-			return err
-		}
-
-		stat, _ := f.Stat()
-
-		fmt.Printf("name: %#v\n", stat.Name())
-
-		// reports, err := r.Check(f)
-
-		// if err != nil {
-		// 	return err
-		// }
-
-		// //fmt.Println(reports)
-		return nil
-	})
-}
-
-*/
