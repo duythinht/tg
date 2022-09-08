@@ -18,6 +18,13 @@ const (
 
 type Rule struct{}
 
+// Name of secrets rule
+func (r *Rule) Name() string {
+	return "secrets"
+}
+
+// Check scan secrets for a file
+// this version currently support only check secret on go source code
 func (r *Rule) Check(f fs.File) ([]rule.Report, error) {
 
 	stat, err := f.Stat()
@@ -66,12 +73,15 @@ func (r *Rule) checkGoSource(name string, src []byte) ([]rule.Report, error) {
 				Type:   Type,
 				RuleID: ID,
 				Location: rule.Location{
-					Path: name,
 					Positions: rule.Positions{
 						Begin: rule.Begin{
 							Line: fset.Position(pos).Line,
 						},
 					},
+				},
+				Metadata: rule.Metadata{
+					Description: "secrets found the the source code",
+					Severity:    "HIGH",
 				},
 			})
 		}
