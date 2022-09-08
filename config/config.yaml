@@ -1,0 +1,7 @@
+db:
+  dsn: postgres://postgres:x@localhost:5432/postgres
+
+queue:
+  brokers: localhost:9092
+  topic: scan
+  group_id: scan-secrets-worker
