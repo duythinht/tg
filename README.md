@@ -11,6 +11,7 @@
 * echo: Just a simple http router/micro framework to handle http API
 * pgx: A pure PostgreSQL driver and toolkit, which can handle postgres specific features as well
 * kafka-go: Kafka library in go, to use as queued for lazy scanning and fast response on the API
+* viper: to manipulate config from config file and env
 * golang-migrate: CLI to create & run the database migration 
 * Docker: To run develop environment
 * PostgreSQL: RDBMS
