@@ -35,10 +35,12 @@ func main() {
 	}
 
 	s := http.Server{
-		Addr:        ":8080",
+		Addr:        cfg.Server.Addr,
 		Handler:     handler,
 		ReadTimeout: 60 * time.Second, // customize http.Server timeouts
 	}
+
+	log.Printf("API Server listen on %s", cfg.Server.Addr)
 
 	log.Fatal(s.ListenAndServe())
 }

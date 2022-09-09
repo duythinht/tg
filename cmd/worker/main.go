@@ -28,5 +28,7 @@ func main() {
 
 	w := worker.New(db, queue)
 
+	log.Printf("Start scanning worker")
+
 	log.Fatal(w.Run(context.Background()))
 }
