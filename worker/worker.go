@@ -110,7 +110,7 @@ func (w *Worker) Run(ctx context.Context) error {
 		}
 
 		if len(result) < 1 {
-			_, err = w.db.Exec(ctx, "UPDATE scans SET status=$1, finished_at=$2 WHERE id=$2", "Success", time.Now(), req.ScanID)
+			_, err = w.db.Exec(ctx, "UPDATE scans SET status=$1, finished_at=$2 WHERE id=$3", "Success", time.Now(), req.ScanID)
 			return err
 		}
 
