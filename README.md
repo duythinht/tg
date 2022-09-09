@@ -95,6 +95,12 @@ curl -XPOST -H 'Content-Type: application/json' http://localhost:10080/api/v1/re
 curl -XPOST -H 'Content-Type: application/json' http://localhost:10080/api/v1/repositories -d '{ "url": "https://github.com/just-a-nomad-org/repo-without-secrets" }'
 
 ```
+output
+```
+{
+  "repositoryId": 2
+}
+```
 
 * List repositories
 
@@ -102,9 +108,36 @@ curl -XPOST -H 'Content-Type: application/json' http://localhost:10080/api/v1/re
 curl -XGET http://localhost:10080/api/v1/repositories
 ```
 
+output
+
+```
+{
+  "repositories": [
+    {
+      "id": 1,
+      "host": "github",
+      "owner": "just-a-nomad-org",
+      "repository": "repo-with-secrets",
+      "url": "https://github.com/just-a-nomad-org/repo-with-secrets",
+      "created_at": "2022-09-09T07:00:10.138211Z",
+      "updated_at": "2022-09-09T07:00:10.138211Z"
+    },
+    {
+      "id": 2,
+      "host": "github",
+      "owner": "duythinht",
+      "repository": "tg",
+      "url": "https://github.com/duythinht/tg",
+      "created_at": "2022-09-09T07:01:57.255618Z",
+      "updated_at": "2022-09-09T07:01:57.255618Z"
+    }
+  ]
+}
+```
+
 * Trigger scan for a repo
 ```
-# eg for repositoryid = 1
+# eg for repositoryId = 1
 
 curl -XPOST -H 'Content-Type: application/json' http://localhost:10080/api/v1/scans/1 -d '{}'
 ```
@@ -116,4 +149,39 @@ curl -XPOST -H 'Content-Type: application/json' http://localhost:10080/api/v1/sc
 
 $ curl -XGET http://localhost:10080/api/v1/scans/2
 
+```
+
+* Example scans outputs:
+
+```
+{
+  "scans": [
+    {
+      "id": 1,
+      "repository_id": 1,
+      "status": "Failure",
+      "findings": [
+        {
+          "type": "sast",
+          "ruleId": "G143",
+          "location": {
+            "path": "cmd/main.go",
+            "positions": {
+              "begin": {
+                "line": 4
+              }
+            }
+          },
+          "metadata": {
+            "severity": "HIGH",
+            "description": "secrets found the the source code"
+          }
+        }
+      ],
+      "queued_at": "2022-09-09T07:00:27.448445Z",
+      "scanning_at": "2022-09-09T07:00:28.467063Z",
+      "finished_at": "2022-09-09T07:00:29.696075Z"
+    }
+  ]
+}
 ```
