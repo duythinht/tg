@@ -1,21 +1,61 @@
-### create repository
+@port=10080
+@repositoryId=1
 
-POST http://localhost:8080/api/v1/repositories
+### create repository with leak secrets on the source code
+
+POST http://localhost:{{port}}/api/v1/repositories
 Content-Type: application/json
 
 {
     "url": "git@github.com:just-a-nomad-org/repo-with-secrets.git"
 }
 
+
+### create repository without leak secrets on the source code
+
+POST http://localhost:{{port}}/api/v1/repositories
+Content-Type: application/json
+
+{
+    "url": "https://github.com/just-a-nomad-org/repo-without-secrets"
+}
+
 ### list repositories
-GET http://localhost:8080/api/v1/repositories
+GET http://localhost:{{port}}/api/v1/repositories
 
 
-### list scans
-GET http://localhost:8080/api/v1/scans/2
+
 
 ### create/trigger a new scan
-POST http://localhost:8080/api/v1/scans/2
+POST http://localhost:{{port}}/api/v1/scans/{{repositoryId}} 
 Content-Type: application/json
 
 {}
+
+
+### list scans
+GET http://localhost:{{port}}/api/v1/scans/{{repositoryId}}
+
+
+### You can test here
+
+@gitUrl=https://github.com/hello/world
+
+# @name createRepository
+POST http://localhost:{{port}}/api/v1/repositories
+Content-Type: application/json
+
+{
+    "url": "{{gitUrl}}"
+}
+
+### list scan for repo above
+# @name listScans
+GET http://localhost:{{port}}/api/v1/scans/{{createRepository.body.repositoryId}}
+
+### triggere scan for repo above
+
+# @name listScans
+GET http://localhost:{{port}}/api/v1/scans/{{createRepository.body.repositoryId}}
+
+### trigger a scan
