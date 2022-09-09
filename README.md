@@ -52,9 +52,68 @@
 
 * Kafka producer & consumer: We need to fast response to the user whenever an scan was triggered, so kafka was used for this case.
 
-### How to
+### How to start it
 
-* Run the migration
+* Start the all-in-one environment
+
 ```
-migrate -path ./migrations -database postgres://postgres:x@localhost:5432/postgres?sslmode=disable up
+docker-compose up
+```
+
+* Then you can test the API at port `10080` (docker map 10080 -> 8080)
+
+* To start the API standalone
+
+```
+go run cmd/api/main.go
+```
+
+* To start the Worker standalone (be careful, the once is running on docker-compose, you might stop it before)
+
+```
+go run cmd/worker/main.go
+```
+
+* environment as config
+    * DB_DSN: the DSN of postgresql
+    * QUEUE_BROKERS: kafka brokers addresses
+    * QUEUE_TOPIC: kafka topic name
+    * QUEUE_GROUP_ID: kafka consumer group id
+    * SERVER_ADDR: address for API listen, default to `8080`
+
+### How to test is it working?
+
+* Create a repository
+
+```
+# create a repo by ssh url
+
+curl -XPOST -H 'Content-Type: application/json' http://localhost:10080/api/v1/repositories -d '{ "url": "git@github.com:just-a-nomad-org/repo-with-secrets.git" }'
+
+# create a repo by https url
+
+curl -XPOST -H 'Content-Type: application/json' http://localhost:10080/api/v1/repositories -d '{ "url": "https://github.com/just-a-nomad-org/repo-without-secrets" }'
+
+```
+
+* List repositories
+
+```
+curl -XGET http://localhost:10080/api/v1/repositories
+```
+
+* Trigger scan for a repo
+```
+# eg for repositoryid = 1
+
+curl -XPOST -H 'Content-Type: application/json' http://localhost:10080/api/v1/scans/1 -d '{}'
+```
+
+* List of scans for a repo
+
+```
+# eg for repositoryid = 1
+
+$ curl -XGET http://localhost:10080/api/v1/scans/2
+
 ```
