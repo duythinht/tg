@@ -44,3 +44,28 @@ services:
     - '8081:8080'
     environment:
       KAFKA_BROKERS: broker:9092
+  api:
+    build: .
+    container_name: api
+    depends_on:
+      - pg14
+      - broker
+    ports:
+    - '10080:8080'
+    environment:
+      DB_DSN: postgres://postgres:x@pg14:5432/postgres?sslmode=disable
+      QUEUE_BROKERS: broker:9092
+      SERVER_ADDR: :8080
+      MUST_MIGRATE: '1'
+    restart: always
+  worker:
+    build: .
+    command: ["/opt/tg/bin/worker"]
+    container_name: worker
+    depends_on:
+      - pg14
+      - broker
+    environment:
+      DB_DSN: postgres://postgres:x@pg14:5432/postgres
+      QUEUE_BROKERS: broker:9092
+    restart: always
