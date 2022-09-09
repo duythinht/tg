@@ -5,3 +5,6 @@ queue:
   brokers: localhost:9092
   topic: scan
   group_id: scan-secrets-worker
+
+server:
+  addr: ':8080'

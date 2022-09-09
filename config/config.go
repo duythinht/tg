@@ -16,6 +16,10 @@ type Config struct {
 		Topic   string `yaml:"topic" mapstructure:"topic"`
 		GroupID string `yaml:"group_id" mapstructure:"group_id"`
 	} `yaml:"queue" mapstructure:"queue"`
+
+	Server struct {
+		Addr string `yaml:"addr" mapstructure:"addr"`
+	} `yaml:"server" mapstructure:"server"`
 }
 
 func Load() (*Config, error) {
